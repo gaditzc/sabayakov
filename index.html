@@ -7,6 +7,7 @@
     <title>House App</title>
     <link rel="manifest" href="manifest.json" />
     <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" defer></script>
     <script src="app.js" defer></script>
   </head>
   <body>
@@ -24,6 +25,13 @@
         </div>
         <p id="distance-value" class="distance-value">--</p>
         <p id="distance-status" class="distance-status">Waiting for GPS signal...</p>
+      </section>
+
+      <section class="chart-card" aria-label="Navigation progress chart">
+        <p class="chart-title">Navigation Progress</p>
+        <div class="chart-shell">
+          <canvas id="distance-chart"></canvas>
+        </div>
       </section>
     </main>
 

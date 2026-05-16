@@ -3,6 +3,12 @@ const TARGET_LOCATION = {
   lon: 35.203,
 };
 
+const GRAPH_SAMPLE_INTERVAL_MS = 1000;
+const MAX_GRAPH_POINTS = 60;
+
+let latestDistanceMeters = null;
+let distanceChart = null;
+
 function haversineDistanceMeters(lat1, lon1, lat2, lon2) {
   const toRad = (value) => (value * Math.PI) / 180;
   const earthRadius = 6371000;
@@ -52,8 +58,120 @@ function setDistance(text) {
   distanceEl.textContent = text;
 }
 
+function formatTimeLabel(timestamp) {
+  return new Date(timestamp).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+}
+
+function createDistanceChart() {
+  const chartCanvas = document.getElementById("distance-chart");
+  if (!chartCanvas || typeof Chart === "undefined") {
+    return;
+  }
+
+  const chartContext = chartCanvas.getContext("2d");
+  if (!chartContext) {
+    return;
+  }
+
+  distanceChart = new Chart(chartContext, {
+    type: "line",
+    data: {
+      labels: [],
+      datasets: [
+        {
+          label: "Distance (m)",
+          data: [],
+          borderColor: "#0ea5e9",
+          backgroundColor: "rgba(14, 165, 233, 0.18)",
+          borderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 3,
+          tension: 0.3,
+          fill: true,
+          spanGaps: true,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      plugins: {
+        legend: {
+          display: false,
+        },
+        tooltip: {
+          intersect: false,
+          mode: "index",
+          callbacks: {
+            label: function (context) {
+              const value = context.parsed.y;
+              return Number.isFinite(value) ? `Distance: ${Math.round(value)} m` : "No GPS data";
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: "Time",
+          },
+          ticks: {
+            maxRotation: 0,
+            autoSkip: true,
+            maxTicksLimit: 5,
+          },
+          grid: {
+            color: "rgba(148, 163, 184, 0.25)",
+          },
+        },
+        y: {
+          title: {
+            display: true,
+            text: "Distance to Target (m)",
+          },
+          beginAtZero: true,
+          grid: {
+            color: "rgba(148, 163, 184, 0.2)",
+          },
+        },
+      },
+    },
+  });
+}
+
+function sampleDistanceForGraph() {
+  if (!distanceChart) {
+    return;
+  }
+
+  const label = formatTimeLabel(Date.now());
+  const value = Number.isFinite(latestDistanceMeters) ? latestDistanceMeters : null;
+
+  distanceChart.data.labels.push(label);
+  distanceChart.data.datasets[0].data.push(value);
+
+  if (distanceChart.data.labels.length > MAX_GRAPH_POINTS) {
+    distanceChart.data.labels.shift();
+    distanceChart.data.datasets[0].data.shift();
+  }
+
+  distanceChart.update("none");
+}
+
 function startDistanceTracking() {
+  createDistanceChart();
+
+  sampleDistanceForGraph();
+  setInterval(sampleDistanceForGraph, GRAPH_SAMPLE_INTERVAL_MS);
+
   if (!("geolocation" in navigator)) {
+    latestDistanceMeters = null;
     setDistance("--");
     setStatus(
       "Location Services are not available on this device. Please use a modern browser.",
@@ -74,6 +192,7 @@ function startDistanceTracking() {
         TARGET_LOCATION.lon,
       );
 
+      latestDistanceMeters = distanceMeters;
       setDistance(formatDistance(distanceMeters));
 
       const accuracyText = Number.isFinite(accuracy)
@@ -82,6 +201,7 @@ function startDistanceTracking() {
       setStatus(`GPS tracking is live${accuracyText}.`, false);
     },
     function (error) {
+      latestDistanceMeters = null;
       setDistance("--");
 
       if (error.code === error.PERMISSION_DENIED) {
