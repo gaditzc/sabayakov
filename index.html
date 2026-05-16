@@ -4,12 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#1f2937" />
-    <title>House App</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <title>The Amazing Race</title>
     <link rel="manifest" href="manifest.json" />
     <link rel="stylesheet" href="style.css" />
+    <script src="app.js" defer></script>
   </head>
   <body>
-    <main class="app" aria-hidden="true"></main>
+    <main id="app" class="app"></main>
 
     <script>
       if ("serviceWorker" in navigator) {

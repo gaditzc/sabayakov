@@ -1,0 +1,41 @@
+{
+  "login_password": "0501234567",
+  "stations": [
+    {
+      "station_id": 1,
+      "target_lat": 31.7543,
+      "target_lon": 35.1051,
+      "clue_text": "Welcome to the Race! Your first mission takes you high into the sky, to a place commemorating courage and aviation—just like the UAVs Dad developed over the years. Let's go!",
+      "arrival_code": "PILOT80",
+      "mission_text": "The sky is the limit! Assemble the kite you received, safely attach the miniature camera, and capture a clear aerial photograph of your entire team from above. Show the photo to the station operator to receive your completion code.",
+      "completion_code": "SKYHIGH"
+    },
+    {
+      "station_id": 2,
+      "target_lat": 31.7711,
+      "target_lon": 35.2155,
+      "clue_text": "Great job! Now we are flying Down Under, back to where it all began. Look for the Australian atmosphere and nature right here in Jerusalem. Let's go!",
+      "arrival_code": "MELBOURNE",
+      "mission_text": "Australian Duel! Watch Dad's demonstration video shown at the station. Select two representatives from your team for a Vegemite cracker-eating challenge. The representatives who successfully finish according to the rules will receive the completion code from the station operator.",
+      "completion_code": "VEGEMITE"
+    },
+    {
+      "station_id": 3,
+      "target_lat": 31.7766,
+      "target_lon": 35.2045,
+      "clue_text": "You have reached a significant milestone. The next location connects Dad's great love for gardening, deep roots, and especially the Seven Species of Israel. Head towards the well-known national symbol overlooking the Knesset. Let's go!",
+      "arrival_code": "MENORAH",
+      "mission_text": "[Seven Species mission text goes here]",
+      "completion_code": "HARVEST"
+    },
+    {
+      "station_id": 4,
+      "target_lat": 31.7923,
+      "target_lon": 35.2444,
+      "clue_text": "You have reached the final stretch! The next location closes an emotional, historic circle with Dad's school in Melbourne, but is located right here—overlooking all of Jerusalem from the loftiest of hills. Rush to the Pit Stop!",
+      "arrival_code": "SCOPUS",
+      "mission_text": "Welcome to the Pit Stop and the official finish line of the race! Enter the final passcode you received from Dad to officially complete the game!",
+      "completion_code": "MAZALTOV"
+    }
+  ]
+}
