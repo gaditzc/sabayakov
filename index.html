@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#1f2937" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>House App</title>
     <link rel="manifest" href="manifest.json" />
     <link rel="stylesheet" href="style.css" />
@@ -24,7 +26,8 @@
           <p class="distance-title">Live distance to Tchernichovsky 68</p>
         </div>
         <p id="distance-value" class="distance-value">--</p>
-        <p id="distance-status" class="distance-status">Waiting for GPS signal...</p>
+        <p id="distance-status" class="distance-status">Tap Start to enable mobile GPS tracking.</p>
+        <button id="start-tracking-btn" class="tracking-btn" type="button">Start GPS Tracking</button>
       </section>
 
       <section class="chart-card" aria-label="Navigation progress chart">

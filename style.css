@@ -14,6 +14,7 @@ body {
   min-height: 100svh;
   display: flex;
   justify-content: center;
+  overflow-y: auto;
   background:
     radial-gradient(circle at 15% 10%, #ffffff 0%, #f6f8fc 45%, #e8edf7 100%);
   color: #0f172a;
@@ -28,7 +29,7 @@ body {
   width: 100%;
   max-width: 520px;
   min-height: 100dvh;
-  padding: 1rem 1rem 1.5rem;
+  padding: 1rem 1rem calc(1.5rem + env(safe-area-inset-bottom));
 }
 
 .house-image {
@@ -110,6 +111,30 @@ body {
   font-size: 0.95rem;
   line-height: 1.35;
   color: #475569;
+}
+
+.tracking-btn {
+  margin-top: 0.65rem;
+  width: 100%;
+  border: 0;
+  border-radius: 12px;
+  padding: 0.68rem 0.85rem;
+  background: linear-gradient(135deg, #0ea5e9, #0284c7);
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 120ms ease, filter 120ms ease;
+}
+
+.tracking-btn:active {
+  transform: translateY(1px);
+}
+
+.tracking-btn[disabled] {
+  cursor: default;
+  filter: grayscale(0.1);
+  opacity: 0.75;
 }
 
 .distance-status.error {

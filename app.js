@@ -8,6 +8,8 @@ const MAX_GRAPH_POINTS = 60;
 
 let latestDistanceMeters = null;
 let distanceChart = null;
+let chartIntervalId = null;
+let watchId = null;
 
 function haversineDistanceMeters(lat1, lon1, lat2, lon2) {
   const toRad = (value) => (value * Math.PI) / 180;
@@ -56,6 +58,16 @@ function setDistance(text) {
   }
 
   distanceEl.textContent = text;
+}
+
+function setTrackingButtonState(text, disabled) {
+  const buttonEl = document.getElementById("start-tracking-btn");
+  if (!buttonEl) {
+    return;
+  }
+
+  buttonEl.textContent = text;
+  buttonEl.disabled = Boolean(disabled);
 }
 
 function formatTimeLabel(timestamp) {
@@ -164,11 +176,76 @@ function sampleDistanceForGraph() {
   distanceChart.update("none");
 }
 
+function updateFromPosition(position) {
+  const { latitude, longitude, accuracy } = position.coords;
+  const distanceMeters = haversineDistanceMeters(
+    latitude,
+    longitude,
+    TARGET_LOCATION.lat,
+    TARGET_LOCATION.lon,
+  );
+
+  latestDistanceMeters = distanceMeters;
+  setDistance(formatDistance(distanceMeters));
+
+  const accuracyText = Number.isFinite(accuracy)
+    ? ` (accuracy +- ${Math.round(accuracy)} m)`
+    : "";
+  setStatus(`GPS tracking is live${accuracyText}.`, false);
+}
+
+function handleLocationError(error) {
+  latestDistanceMeters = null;
+  setDistance("--");
+  setTrackingButtonState("Start GPS Tracking", false);
+
+  if (!window.isSecureContext) {
+    setStatus("Location requires HTTPS. Please open the app from your GitHub Pages URL.", true);
+    return;
+  }
+
+  if (error && error.code === error.PERMISSION_DENIED) {
+    setStatus(
+      "Location access is off. Please enable Location Services in browser settings, then tap Start again.",
+      true,
+    );
+    return;
+  }
+
+  setStatus(
+    "Unable to get your location right now. Move outdoors or check GPS, then tap Start again.",
+    true,
+  );
+}
+
+function requestSingleLocation() {
+  navigator.geolocation.getCurrentPosition(updateFromPosition, handleLocationError, {
+    enableHighAccuracy: true,
+    maximumAge: 0,
+    timeout: 12000,
+  });
+}
+
+function startGeolocationWatch() {
+  if (watchId !== null) {
+    navigator.geolocation.clearWatch(watchId);
+    watchId = null;
+  }
+
+  watchId = navigator.geolocation.watchPosition(updateFromPosition, handleLocationError, {
+    enableHighAccuracy: true,
+    maximumAge: 5000,
+    timeout: 15000,
+  });
+}
+
 function startDistanceTracking() {
   createDistanceChart();
 
   sampleDistanceForGraph();
-  setInterval(sampleDistanceForGraph, GRAPH_SAMPLE_INTERVAL_MS);
+  if (chartIntervalId === null) {
+    chartIntervalId = setInterval(sampleDistanceForGraph, GRAPH_SAMPLE_INTERVAL_MS);
+  }
 
   if (!("geolocation" in navigator)) {
     latestDistanceMeters = null;
@@ -177,52 +254,23 @@ function startDistanceTracking() {
       "Location Services are not available on this device. Please use a modern browser.",
       true,
     );
+    setTrackingButtonState("GPS Not Supported", true);
     return;
   }
 
-  setStatus("Requesting your location permission...", false);
+  setTrackingButtonState("Start GPS Tracking", false);
 
-  navigator.geolocation.watchPosition(
-    function (position) {
-      const { latitude, longitude, accuracy } = position.coords;
-      const distanceMeters = haversineDistanceMeters(
-        latitude,
-        longitude,
-        TARGET_LOCATION.lat,
-        TARGET_LOCATION.lon,
-      );
+  const startButton = document.getElementById("start-tracking-btn");
+  if (!startButton) {
+    return;
+  }
 
-      latestDistanceMeters = distanceMeters;
-      setDistance(formatDistance(distanceMeters));
-
-      const accuracyText = Number.isFinite(accuracy)
-        ? ` (accuracy ±${Math.round(accuracy)} m)`
-        : "";
-      setStatus(`GPS tracking is live${accuracyText}.`, false);
-    },
-    function (error) {
-      latestDistanceMeters = null;
-      setDistance("--");
-
-      if (error.code === error.PERMISSION_DENIED) {
-        setStatus(
-          "Please enable Location Services in your browser settings to see live distance.",
-          true,
-        );
-        return;
-      }
-
-      setStatus(
-        "We could not read your location right now. Please enable Location Services and try again.",
-        true,
-      );
-    },
-    {
-      enableHighAccuracy: true,
-      maximumAge: 5000,
-      timeout: 15000,
-    },
-  );
+  startButton.addEventListener("click", function () {
+    setTrackingButtonState("Tracking Enabled", true);
+    setStatus("Requesting your location permission...", false);
+    requestSingleLocation();
+    startGeolocationWatch();
+  });
 }
 
 window.addEventListener("DOMContentLoaded", startDistanceTracking);
