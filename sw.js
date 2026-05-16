@@ -1,4 +1,4 @@
-const CACHE_NAME = "amazing-race-shell-v1";
+const CACHE_NAME = "amazing-race-shell-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -58,6 +58,25 @@ self.addEventListener("fetch", function (event) {
         })
         .catch(function () {
           return caches.match(event.request);
+        }),
+    );
+    return;
+  }
+
+  if (event.request.mode === "navigate" || requestUrl.pathname.endsWith("/index.html")) {
+    event.respondWith(
+      fetch(event.request)
+        .then(function (response) {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then(function (cache) {
+            cache.put(event.request, responseClone);
+          });
+          return response;
+        })
+        .catch(function () {
+          return caches.match(event.request).then(function (cachedResponse) {
+            return cachedResponse || caches.match("./index.html");
+          });
         }),
     );
     return;

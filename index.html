@@ -12,12 +12,20 @@
     <script src="app.js" defer></script>
   </head>
   <body>
-    <main id="app" class="app"></main>
+    <main id="app" class="app">
+      <section class="screen screen--centered">
+        <div class="panel panel--compact">
+          <p class="eyebrow">The Amazing Race</p>
+          <h1 class="hero-title">Loading game data…</h1>
+          <p class="body-copy">Preparing your stations and race settings.</p>
+        </div>
+      </section>
+    </main>
 
     <script>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", function () {
-          navigator.serviceWorker.register("./sw.js").catch(function (error) {
+          navigator.serviceWorker.register("./sw.js?v=2", { updateViaCache: "none" }).catch(function (error) {
             console.error("Service worker registration failed:", error);
           });
         });
