@@ -1,4 +1,4 @@
-const CONFIG_URL = "./config.json";
+const CONFIG_URL = "./config.json?t=" + Date.now();
 const STORAGE_KEY = "amazing-race-game-state-v1";
 
 const APP_STATE = {
