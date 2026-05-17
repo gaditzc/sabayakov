@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1f2937" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <title>The Amazing Race</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <main id="app" class="app">
+      <section class="screen screen--centered">
+        <div class="panel panel--compact">
+          <p class="eyebrow">The Amazing Race</p>
+          <h1 class="hero-title">Loading game data…</h1>
+          <p class="body-copy">Preparing your stations and race settings.</p>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker.register("./sw.js?v=2", { updateViaCache: "none" }).catch(function (error) {
+            console.error("Service worker registration failed:", error);
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
