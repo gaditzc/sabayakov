@@ -346,11 +346,7 @@ function renderLoginScreen() {
   appRoot.innerHTML = `
     <section class="screen screen--centered">
       <form id="login-form" class="panel login-panel" novalidate>
-        <div class="login-icon" aria-hidden="true">☎</div>
-        <p class="eyebrow">Entry Screen</p>
-        <h1 class="hero-title">Welcome to The Amazing Race</h1>
-        <p class="body-copy">Enter Dad&apos;s phone number to start the game.</p>
-        <label class="field-label" for="login-password">Password</label>
+        <div class="login-icon" aria-hidden="true">📱</div>
         <input
           id="login-password"
           name="login-password"
@@ -362,7 +358,7 @@ function renderLoginScreen() {
           required
         />
         <p id="login-error" class="field-error" role="alert"></p>
-        <button class="primary-button" type="submit">Enter Game</button>
+        <button type="submit" aria-label="Submit" style="position:absolute;left:-9999px;opacity:0;pointer-events:none;">Submit</button>
       </form>
     </section>
   `;
