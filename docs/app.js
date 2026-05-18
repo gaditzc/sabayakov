@@ -335,7 +335,7 @@ function renderLoadingScreen() {
   appRoot.innerHTML = `
     <section class="screen screen--centered">
       <div class="panel panel--compact">
-        <p class="eyebrow">The Amazing Race</p>
+        <p class="eyebrow">Sabayakov</p>
         <h1 class="hero-title">Loading game data…</h1>
         <p class="body-copy">Preparing your stations and race settings.</p>
       </div>
@@ -347,7 +347,7 @@ function renderConfigErrorScreen() {
   appRoot.innerHTML = `
     <section class="screen screen--centered">
       <div class="panel panel--compact">
-        <p class="eyebrow">The Amazing Race</p>
+        <p class="eyebrow">Sabayakov</p>
         <h1 class="hero-title">Unable to load the game</h1>
         <p class="body-copy">${escapeHtml(configLoadError || "The configuration file could not be read.")}</p>
       </div>
@@ -448,7 +448,7 @@ function renderCompletedScreen() {
         <div class="completion-badge" aria-hidden="true">🏁</div>
         <p class="eyebrow">Game Completed</p>
         <h1 class="hero-title">Congratulations!</h1>
-        <p class="body-copy">You finished The Amazing Race.</p>
+        <p class="body-copy">You finished Sabayakov.</p>
       </div>
     </section>
   `;
