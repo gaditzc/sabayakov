@@ -74,12 +74,41 @@ function validateConfig(rawConfig) {
   }
 
   const stations = rawConfig.stations.map(function (station, index) {
-    const requiredStringFields = ["clue_text", "arrival_code", "mission_text", "completion_code"];
+    const requiredStringFields = ["clue_text", "arrival_code", "completion_code"];
     requiredStringFields.forEach(function (field) {
       if (typeof station[field] !== "string" || !station[field].length) {
         throw new Error(`Station ${index + 1} is missing ${field}.`);
       }
     });
+
+    const hasMissionText = typeof station.mission_text === "string" && station.mission_text.length > 0;
+    const hasMissionSteps = Array.isArray(station.mission_steps) && station.mission_steps.length > 0;
+
+    if (!hasMissionText && !hasMissionSteps) {
+      throw new Error(`Station ${index + 1} must include mission_text or mission_steps.`);
+    }
+
+    let missionSteps = null;
+    if (hasMissionSteps) {
+      missionSteps = station.mission_steps.map(function (step, stepIndex) {
+        if (!step || typeof step !== "object") {
+          throw new Error(`Station ${index + 1}, mission step ${stepIndex + 1} is invalid.`);
+        }
+
+        if (step.step_type !== "text" && step.step_type !== "video") {
+          throw new Error(`Station ${index + 1}, mission step ${stepIndex + 1} has unsupported step_type.`);
+        }
+
+        if (typeof step.content !== "string" || !step.content.length) {
+          throw new Error(`Station ${index + 1}, mission step ${stepIndex + 1} is missing content.`);
+        }
+
+        return {
+          step_type: step.step_type,
+          content: step.content,
+        };
+      });
+    }
 
     if (!Number.isFinite(station.station_id)) {
       throw new Error(`Station ${index + 1} is missing station_id.`);
@@ -95,7 +124,8 @@ function validateConfig(rawConfig) {
       target_lon: station.target_lon,
       clue_text: station.clue_text,
       arrival_code: station.arrival_code,
-      mission_text: station.mission_text,
+      mission_text: hasMissionText ? station.mission_text : "",
+      mission_steps: missionSteps,
       completion_code: station.completion_code,
     };
   });
@@ -209,6 +239,45 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
+}
+
+function isValidVideoUrl(value) {
+  try {
+    const parsedUrl = new URL(value, window.location.href);
+    return parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:";
+  } catch (error) {
+    return false;
+  }
+}
+
+function renderMissionBody(station) {
+  if (Array.isArray(station.mission_steps) && station.mission_steps.length > 0) {
+    const stepsMarkup = station.mission_steps
+      .map(function (step) {
+        if (step.step_type === "video") {
+          if (!isValidVideoUrl(step.content)) {
+            return "";
+          }
+
+          const videoUrl = escapeHtml(step.content);
+          return `
+            <div class="mission-step mission-step--video">
+              <video class="mission-video" controls playsinline preload="metadata">
+                <source src="${videoUrl}" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          `;
+        }
+
+        return `<p class="story-text mission-step mission-step--text">${escapeHtml(step.content)}</p>`;
+      })
+      .join("");
+
+    return `<div class="mission-steps">${stepsMarkup}</div>`;
+  }
+
+  return `<p class="story-text">${escapeHtml(station.mission_text)}</p>`;
 }
 
 function setText(id, value) {
@@ -392,12 +461,14 @@ function renderGameScreen() {
 
   const isNavigation = appState.screen === APP_STATE.NAVIGATION;
   const heading = isNavigation ? "Navigation Mode" : "Mission Mode";
-  const copy = isNavigation ? station.clue_text : station.mission_text;
   const label = isNavigation ? "Arrival Passcode" : "Completion Passcode";
   const inputId = isNavigation ? "arrival-passcode" : "completion-passcode";
   const formId = isNavigation ? "arrival-form" : "completion-form";
   const errorId = isNavigation ? "arrival-error" : "completion-error";
   const buttonText = isNavigation ? "Confirm Arrival" : "Submit Completion Code";
+  const storyMarkup = isNavigation
+    ? `<p class="story-text">${escapeHtml(station.clue_text)}</p>`
+    : renderMissionBody(station);
 
   appRoot.innerHTML = `
     <section class="screen screen--game">
@@ -418,7 +489,7 @@ function renderGameScreen() {
 
       <section class="panel story-panel" aria-live="polite">
         <p class="eyebrow">${heading}</p>
-        <p class="story-text">${escapeHtml(copy)}</p>
+        ${storyMarkup}
       </section>
 
       <form id="${formId}" class="panel action-panel" novalidate>

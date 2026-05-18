@@ -246,6 +246,32 @@ body {
   word-break: break-word;
 }
 
+.mission-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-top: 0.55rem;
+}
+
+.mission-step {
+  margin-top: 0;
+}
+
+.mission-step--video {
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 14px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.mission-video {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 320px;
+  background: #000;
+}
+
 .primary-button {
   margin-top: 0.8rem;
   width: 100%;
