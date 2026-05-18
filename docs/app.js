@@ -354,7 +354,7 @@ function renderLoginScreen() {
           type="password"
           inputmode="numeric"
           autocomplete="off"
-          placeholder="Phone number"
+          placeholder=""
           required
         />
         <p id="login-error" class="field-error" role="alert"></p>
