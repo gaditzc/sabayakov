@@ -171,6 +171,19 @@ function formatDistanceMeters(distanceMeters) {
   return `${kilometers.toFixed(decimals)} km`;
 }
 
+function normalizePhoneLikeValue(value) {
+  const latinDigits = String(value)
+    .trim()
+    .replace(/[\u0660-\u0669]/g, function (char) {
+      return String(char.charCodeAt(0) - 0x0660);
+    })
+    .replace(/[\u06F0-\u06F9]/g, function (char) {
+      return String(char.charCodeAt(0) - 0x06f0);
+    });
+
+  return latinDigits.replace(/[^0-9]/g, "");
+}
+
 function haversineDistanceMeters(lat1, lon1, lat2, lon2) {
   const toRadians = function (value) {
     return (value * Math.PI) / 180;
@@ -501,8 +514,9 @@ function render() {
 }
 
 function handleLoginSubmit(form) {
-  const passwordValue = form.elements["login-password"].value.trim();
-  if (passwordValue !== gameConfig.login_password) {
+  const passwordValue = normalizePhoneLikeValue(form.elements["login-password"].value);
+  const expectedPassword = normalizePhoneLikeValue(gameConfig.login_password);
+  if (passwordValue !== expectedPassword) {
     setFormError("login-error", "Incorrect password.");
     return;
   }
