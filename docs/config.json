@@ -30,6 +30,14 @@
         },
         {
           "step_type": "text",
+          "content": "שלב 3: צפו בסרטון ההדגמה הנוסף להשלמת החיבורים והייצוב לפני ההפעלה."
+        },
+        {
+          "step_type": "video",
+          "content": "https://www.example.com/videos/kite_step3.mp4"
+        },
+        {
+          "step_type": "text",
           "content": "לאחר השלמת הבנייה והצילום, הציגו את התמונה למפעיל התחנה כדי לקבל את קוד הסיום."
         }
       ],
