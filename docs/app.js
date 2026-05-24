@@ -95,7 +95,7 @@ function validateConfig(rawConfig) {
           throw new Error(`Station ${index + 1}, mission step ${stepIndex + 1} is invalid.`);
         }
 
-        if (step.step_type !== "text" && step.step_type !== "video") {
+        if (step.step_type !== "text" && step.step_type !== "video" && step.step_type !== "youtube") {
           throw new Error(`Station ${index + 1}, mission step ${stepIndex + 1} has unsupported step_type.`);
         }
 
@@ -250,11 +250,68 @@ function isValidVideoUrl(value) {
   }
 }
 
+function extractYouTubeId(value) {
+  try {
+    const parsedUrl = new URL(value, window.location.href);
+    const hostname = parsedUrl.hostname.toLowerCase();
+
+    if (hostname === "youtu.be") {
+      const shortId = parsedUrl.pathname.replace("/", "").trim();
+      return shortId || null;
+    }
+
+    if (hostname.endsWith("youtube.com")) {
+      if (parsedUrl.pathname === "/watch") {
+        const watchId = parsedUrl.searchParams.get("v");
+        return watchId || null;
+      }
+
+      if (parsedUrl.pathname.startsWith("/embed/")) {
+        const embedId = parsedUrl.pathname.split("/")[2];
+        return embedId || null;
+      }
+    }
+
+    return null;
+  } catch (error) {
+    return null;
+  }
+}
+
+function getYouTubeEmbedUrl(value) {
+  const id = extractYouTubeId(value);
+  if (!id) {
+    return null;
+  }
+
+  return `https://www.youtube.com/embed/${encodeURIComponent(id)}`;
+}
+
 function renderMissionBody(station) {
   if (Array.isArray(station.mission_steps) && station.mission_steps.length > 0) {
     const stepsMarkup = station.mission_steps
       .map(function (step) {
-        if (step.step_type === "video") {
+        if (step.step_type === "video" || step.step_type === "youtube") {
+          const youtubeEmbedUrl = getYouTubeEmbedUrl(step.content);
+          if (youtubeEmbedUrl) {
+            const embedUrl = escapeHtml(youtubeEmbedUrl);
+            return `
+              <div class="mission-step mission-step--video mission-step--youtube">
+                <div class="mission-youtube-wrap">
+                  <iframe
+                    class="mission-youtube"
+                    src="${embedUrl}"
+                    title="Mission video"
+                    loading="lazy"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen
+                  ></iframe>
+                </div>
+              </div>
+            `;
+          }
+
           if (!isValidVideoUrl(step.content)) {
             return "";
           }
