@@ -246,6 +246,11 @@ body {
   word-break: break-word;
 }
 
+.story-text--rtl {
+  direction: rtl;
+  text-align: right;
+}
+
 .mission-steps {
   display: flex;
   flex-direction: column;

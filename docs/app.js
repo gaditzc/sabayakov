@@ -298,6 +298,12 @@ function getYouTubeEmbedUrl(value) {
   return `https://www.youtube.com/embed/${encodeURIComponent(id)}`;
 }
 
+function getStoryTextClass(value) {
+  const textValue = String(value || "");
+  const hasHebrew = /[\u0590-\u05FF]/.test(textValue);
+  return hasHebrew ? "story-text story-text--rtl" : "story-text";
+}
+
 function renderMissionBody(station) {
   if (Array.isArray(station.mission_steps) && station.mission_steps.length > 0) {
     const stepsMarkup = station.mission_steps
@@ -338,14 +344,14 @@ function renderMissionBody(station) {
           `;
         }
 
-        return `<p class="story-text mission-step mission-step--text">${escapeHtml(step.content)}</p>`;
+        return `<p class="${getStoryTextClass(step.content)} mission-step mission-step--text">${escapeHtml(step.content)}</p>`;
       })
       .join("");
 
     return `<div class="mission-steps">${stepsMarkup}</div>`;
   }
 
-  return `<p class="story-text">${escapeHtml(station.mission_text)}</p>`;
+  return `<p class="${getStoryTextClass(station.mission_text)}">${escapeHtml(station.mission_text)}</p>`;
 }
 
 function setText(id, value) {
@@ -496,7 +502,7 @@ function renderLoginScreen() {
   appRoot.innerHTML = `
     <section class="screen screen--centered">
       <form id="login-form" class="panel login-panel" novalidate>
-        <div class="login-icon" aria-hidden="true">📱</div>
+        <div class="login-icon" aria-hidden="true">☎</div>
         <input
           id="login-password"
           name="login-password"
@@ -535,7 +541,7 @@ function renderGameScreen() {
   const errorId = isNavigation ? "arrival-error" : "completion-error";
   const buttonText = isNavigation ? "Confirm Arrival" : "Submit Completion Code";
   const storyMarkup = isNavigation
-    ? `<p class="story-text">${escapeHtml(station.clue_text)}</p>`
+    ? `<p class="${getStoryTextClass(station.clue_text)}">${escapeHtml(station.clue_text)}</p>`
     : renderMissionBody(station);
 
   appRoot.innerHTML = `
