@@ -1,5 +1,6 @@
 ﻿{
   "login_password": "0508363015",
+  "arrival_distance_threshold_meters": 20000,
   "stations": [
     {
       "station_id": 1,
@@ -72,3 +73,5 @@
     }
   ]
 }
+
+
