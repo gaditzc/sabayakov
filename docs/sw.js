@@ -1,4 +1,4 @@
-const CACHE_NAME = "amazing-race-shell-v5";
+const CACHE_NAME = "amazing-race-shell-v6";
 const APP_SHELL = [
   "./",
   "./index.html",
