@@ -703,11 +703,8 @@ function handleArrivalSubmit(form) {
     return;
   }
 
-  const arrivalCode = form.elements.code.value.trim().toUpperCase();
-  if (arrivalCode !== station.arrival_code.toUpperCase()) {
-    setFormError("arrival-error", "Incorrect arrival passcode.");
-    return;
-  }
+  // Once the team is within the configured radius, unlock mission mode without a manual arrival code.
+  setFormError("arrival-error", "");
 
   appState = {
     ...appState,
