@@ -179,6 +179,46 @@ function isGameplayScreen(screen) {
   return screen === APP_STATE.NAVIGATION || screen === APP_STATE.MISSION;
 }
 
+function normalizeStationCode(value) {
+  return String(value || "").trim().toUpperCase();
+}
+
+function findStationByAnyCode(rawCode) {
+  if (!gameConfig) {
+    return null;
+  }
+
+  const code = normalizeStationCode(rawCode);
+  if (!code) {
+    return null;
+  }
+
+  return (
+    gameConfig.stations.find(function (station) {
+      return (
+        normalizeStationCode(station.arrival_code) === code ||
+        normalizeStationCode(station.completion_code) === code
+      );
+    }) || null
+  );
+}
+
+function jumpToStationByCode(rawCode) {
+  const matchedStation = findStationByAnyCode(rawCode);
+  if (!matchedStation) {
+    return false;
+  }
+
+  appState = {
+    screen: APP_STATE.MISSION,
+    activeStationId: matchedStation.station_id,
+  };
+  saveState();
+  currentCoords = null;
+  render();
+  return true;
+}
+
 function formatDistanceMeters(distanceMeters) {
   if (!Number.isFinite(distanceMeters)) {
     return "--";
@@ -701,6 +741,13 @@ function handleArrivalSubmit(form) {
     return;
   }
 
+  const arrivalCode = normalizeStationCode(form.elements.code.value);
+  const matchedStation = findStationByAnyCode(arrivalCode);
+  if (matchedStation && matchedStation.station_id !== station.station_id) {
+    jumpToStationByCode(arrivalCode);
+    return;
+  }
+
   if (!currentCoords) {
     setFormError("arrival-error", "ממתינים לאות GPS לפני בדיקת הגעה.");
     return;
@@ -722,8 +769,7 @@ function handleArrivalSubmit(form) {
     return;
   }
 
-  const arrivalCode = form.elements.code.value.trim().toUpperCase();
-  if (arrivalCode !== station.arrival_code.toUpperCase()) {
+  if (arrivalCode !== normalizeStationCode(station.arrival_code)) {
     setFormError("arrival-error", "קוד הגעה שגוי.");
     return;
   }
@@ -742,8 +788,13 @@ function handleCompletionSubmit(form) {
     return;
   }
 
-  const completionCode = form.elements.code.value.trim().toUpperCase();
-  if (completionCode !== station.completion_code.toUpperCase()) {
+  const completionCode = normalizeStationCode(form.elements.code.value);
+  const isCurrentStationCompletionCode = completionCode === normalizeStationCode(station.completion_code);
+  if (!isCurrentStationCompletionCode) {
+    if (jumpToStationByCode(completionCode)) {
+      return;
+    }
+
     setFormError("completion-error", "קוד סיום שגוי.");
     return;
   }
