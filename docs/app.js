@@ -183,7 +183,7 @@ function normalizeStationCode(value) {
   return String(value || "").trim().toUpperCase();
 }
 
-function findStationByAnyCode(rawCode) {
+function getDestinationByCode(rawCode) {
   if (!gameConfig) {
     return null;
   }
@@ -193,25 +193,44 @@ function findStationByAnyCode(rawCode) {
     return null;
   }
 
-  return (
-    gameConfig.stations.find(function (station) {
-      return (
-        normalizeStationCode(station.arrival_code) === code ||
-        normalizeStationCode(station.completion_code) === code
-      );
-    }) || null
-  );
+  for (let index = 0; index < gameConfig.stations.length; index += 1) {
+    const station = gameConfig.stations[index];
+
+    if (normalizeStationCode(station.arrival_code) === code) {
+      return {
+        screen: APP_STATE.MISSION,
+        activeStationId: station.station_id,
+      };
+    }
+
+    if (normalizeStationCode(station.completion_code) === code) {
+      const isFinalStation = index === gameConfig.stations.length - 1;
+      if (isFinalStation) {
+        return {
+          screen: APP_STATE.COMPLETED,
+          activeStationId: station.station_id,
+        };
+      }
+
+      return {
+        screen: APP_STATE.NAVIGATION,
+        activeStationId: gameConfig.stations[index + 1].station_id,
+      };
+    }
+  }
+
+  return null;
 }
 
 function jumpToStationByCode(rawCode) {
-  const matchedStation = findStationByAnyCode(rawCode);
-  if (!matchedStation) {
+  const destination = getDestinationByCode(rawCode);
+  if (!destination) {
     return false;
   }
 
   appState = {
-    screen: APP_STATE.MISSION,
-    activeStationId: matchedStation.station_id,
+    screen: destination.screen,
+    activeStationId: destination.activeStationId,
   };
   saveState();
   currentCoords = null;
@@ -736,20 +755,18 @@ function handleLoginSubmit(form) {
 }
 
 function handleArrivalSubmit(form) {
+  const arrivalCode = normalizeStationCode(form.elements.code.value);
+  if (jumpToStationByCode(arrivalCode)) {
+    return;
+  }
+
   const station = getCurrentStation();
   if (!station) {
     return;
   }
 
-  const arrivalCode = normalizeStationCode(form.elements.code.value);
-  const matchedStation = findStationByAnyCode(arrivalCode);
-  if (matchedStation && matchedStation.station_id !== station.station_id) {
-    jumpToStationByCode(arrivalCode);
-    return;
-  }
-
   if (!currentCoords) {
-    setFormError("arrival-error", "ממתינים לאות GPS לפני בדיקת הגעה.");
+    setFormError("arrival-error", "קוד לא מוכר.");
     return;
   }
 
@@ -762,15 +779,12 @@ function handleArrivalSubmit(form) {
   const maxDistanceMeters = getArrivalDistanceThresholdMeters();
 
   if (distanceMeters > maxDistanceMeters) {
-    setFormError(
-      "arrival-error",
-      `רחוקים מדי מהתחנה. התקרבו עד ${formatDistanceMeters(maxDistanceMeters)} (כרגע ${formatDistanceMeters(distanceMeters)}).`,
-    );
+    setFormError("arrival-error", "קוד לא מוכר.");
     return;
   }
 
   if (arrivalCode !== normalizeStationCode(station.arrival_code)) {
-    setFormError("arrival-error", "קוד הגעה שגוי.");
+    setFormError("arrival-error", "קוד לא מוכר.");
     return;
   }
 
@@ -783,43 +797,12 @@ function handleArrivalSubmit(form) {
 }
 
 function handleCompletionSubmit(form) {
-  const station = getCurrentStation();
-  if (!station) {
-    return;
-  }
-
   const completionCode = normalizeStationCode(form.elements.code.value);
-  const isCurrentStationCompletionCode = completionCode === normalizeStationCode(station.completion_code);
-  if (!isCurrentStationCompletionCode) {
-    if (jumpToStationByCode(completionCode)) {
-      return;
-    }
-
-    setFormError("completion-error", "קוד סיום שגוי.");
+  if (jumpToStationByCode(completionCode)) {
     return;
   }
 
-  const currentStationIndex = getStationIndex(station.station_id);
-  const isFinalStation = currentStationIndex === gameConfig.stations.length - 1;
-
-  if (isFinalStation) {
-    appState = {
-      screen: APP_STATE.COMPLETED,
-      activeStationId: station.station_id,
-    };
-    saveState();
-    render();
-    return;
-  }
-
-  const nextStation = gameConfig.stations[currentStationIndex + 1];
-  appState = {
-    screen: APP_STATE.NAVIGATION,
-    activeStationId: nextStation.station_id,
-  };
-  saveState();
-  currentCoords = null;
-  render();
+  setFormError("completion-error", "קוד לא מוכר.");
 }
 
 function bindEvents() {
