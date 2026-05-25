@@ -641,12 +641,12 @@ function renderGameScreen() {
 
       ${isNavigation
         ? `<section id="arrival-code-window" class="panel arrival-code-window" aria-live="polite">
+            <p class="arrival-code-text">הקלידו את הקוד בשדה למטה:</p>
             <p id="arrival-code-value" class="arrival-code-value"></p>
           </section>`
         : ""}
 
       <form id="${formId}" class="panel action-panel" novalidate>
-        <label class="field-label" for="${inputId}">הקלידו את הקוד בשדה למטה:</label>
         <input
           id="${inputId}"
           name="code"
