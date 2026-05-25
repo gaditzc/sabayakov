@@ -612,12 +612,12 @@ function renderGameScreen() {
   }
 
   const isNavigation = appState.screen === APP_STATE.NAVIGATION;
-  const heading = isNavigation ? "מצב ניווט" : "תיאור המשימה";
+  const heading = isNavigation ? "מצב ניווט" : "";
   const label = isNavigation ? "קוד הגעה" : "קוד סיום";
   const inputId = isNavigation ? "arrival-passcode" : "completion-passcode";
   const formId = isNavigation ? "arrival-form" : "completion-form";
   const errorId = isNavigation ? "arrival-error" : "completion-error";
-  const buttonText = isNavigation ? "אישור הגעה" : "שליחת קוד סיום";
+  const buttonText = isNavigation ? "אישור הגעה" : "שלח";
   const storyMarkup = isNavigation
     ? `<p class="${getStoryTextClass(station.clue_text)}">${formatTextWithClickableLinks(station.clue_text)}</p>`
     : renderMissionBody(station);
@@ -636,7 +636,7 @@ function renderGameScreen() {
       </header>
 
       <section class="panel story-panel" aria-live="polite">
-        <p class="eyebrow">${heading}</p>
+        ${heading ? `<p class="eyebrow">${heading}</p>` : ""}
         ${storyMarkup}
       </section>
 
@@ -649,7 +649,7 @@ function renderGameScreen() {
         : ""}
 
       <form id="${formId}" class="panel action-panel" novalidate>
-        <label class="field-label" for="${inputId}">${label}</label>
+        ${isNavigation ? `<label class="field-label" for="${inputId}">${label}</label>` : ""}
         <input
           id="${inputId}"
           name="code"
