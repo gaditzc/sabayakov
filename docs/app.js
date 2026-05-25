@@ -625,12 +625,8 @@ function renderGameScreen() {
     <section class="screen screen--game">
       <header class="game-header" aria-label="Live navigation status">
         <div class="metric-card">
-          <div class="metric-label-row">
-            <span class="live-dot" aria-hidden="true"></span>
-            <span class="metric-label">המרחק מנקודת הציון הבאה</span>
-          </div>
+          <span class="metric-label">המרחק מנקודת הציון הבאה</span>
           <span id="distance-value" class="metric-value">--</span>
-          <span id="distance-status" class="metric-subtle">ממתינים לאות GPS...</span>
         </div>
       </header>
 
