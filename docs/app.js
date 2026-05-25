@@ -464,14 +464,14 @@ function startGeolocationTracking() {
       currentCoords = null;
       if (error && error.code === error.PERMISSION_DENIED) {
         setLiveStatus(
-          "Location Services are disabled. Please enable them in your browser settings.",
+          "שירותי המיקום כבויים. הפעילו אותם בהגדרות הדפדפן.",
           true,
         );
         return;
       }
 
       setLiveStatus(
-        "We could not read your location right now. Please check Location Services.",
+        "לא הצלחנו לקרוא את המיקום כרגע. בדקו ששירותי המיקום פעילים.",
         true,
       );
     },
@@ -510,17 +510,17 @@ function updateLiveHeader() {
     setDistanceValue(formatDistanceMeters(distanceMeters));
 
     if (appState.screen === APP_STATE.NAVIGATION && distanceMeters <= maxDistanceMeters) {
-      setLiveStatus(`You are within range. Arrival passcode: ${station.arrival_code}`, false);
+      setLiveStatus(`אתם בטווח. קוד הגעה: ${station.arrival_code}`, false);
       setArrivalCodeWindow(true, station.arrival_code);
     } else if (!document.getElementById("distance-status")?.classList.contains("is-error")) {
-      setLiveStatus("Live GPS tracking is active.", false);
+      setLiveStatus("מעקב GPS פעיל.", false);
       setArrivalCodeWindow(false, "");
     }
   } else {
     setDistanceValue("--");
     setArrivalCodeWindow(false, "");
     if (!document.getElementById("distance-status")?.textContent) {
-      setLiveStatus("Waiting for GPS signal...", false);
+      setLiveStatus("ממתינים לאות GPS...", false);
     }
   }
 }
@@ -537,8 +537,8 @@ function renderLoadingScreen() {
     <section class="screen screen--centered">
       <div class="panel panel--compact">
         <p class="eyebrow">Sabayakov</p>
-        <h1 class="hero-title">Loading game data…</h1>
-        <p class="body-copy">Preparing your stations and race settings.</p>
+        <h1 class="hero-title">טוען את המשחק…</h1>
+        <p class="body-copy">מכין את התחנות וההגדרות.</p>
       </div>
     </section>
   `;
@@ -549,8 +549,8 @@ function renderConfigErrorScreen() {
     <section class="screen screen--centered">
       <div class="panel panel--compact">
         <p class="eyebrow">Sabayakov</p>
-        <h1 class="hero-title">Unable to load the game</h1>
-        <p class="body-copy">${escapeHtml(configLoadError || "The configuration file could not be read.")}</p>
+        <h1 class="hero-title">לא ניתן לטעון את המשחק</h1>
+        <p class="body-copy">${escapeHtml(configLoadError || "לא ניתן לקרוא את קובץ ההגדרות.")}</p>
       </div>
     </section>
   `;
@@ -572,7 +572,7 @@ function renderLoginScreen() {
           required
         />
         <p id="login-error" class="field-error" role="alert"></p>
-        <button type="submit" aria-label="Submit" style="position:absolute;left:-9999px;opacity:0;pointer-events:none;">Submit</button>
+        <button type="submit" aria-label="אישור" style="position:absolute;left:-9999px;opacity:0;pointer-events:none;">אישור</button>
       </form>
     </section>
   `;
@@ -592,12 +592,12 @@ function renderGameScreen() {
   }
 
   const isNavigation = appState.screen === APP_STATE.NAVIGATION;
-  const heading = isNavigation ? "Navigation Mode" : "Mission Mode";
-  const label = isNavigation ? "Arrival Passcode" : "Completion Passcode";
+  const heading = isNavigation ? "מצב ניווט" : "מצב משימה";
+  const label = isNavigation ? "קוד הגעה" : "קוד סיום";
   const inputId = isNavigation ? "arrival-passcode" : "completion-passcode";
   const formId = isNavigation ? "arrival-form" : "completion-form";
   const errorId = isNavigation ? "arrival-error" : "completion-error";
-  const buttonText = isNavigation ? "Confirm Arrival" : "Submit Completion Code";
+  const buttonText = isNavigation ? "אישור הגעה" : "שליחת קוד סיום";
   const storyMarkup = isNavigation
     ? `<p class="${getStoryTextClass(station.clue_text)}">${formatTextWithClickableLinks(station.clue_text)}</p>`
     : renderMissionBody(station);
@@ -606,16 +606,16 @@ function renderGameScreen() {
     <section class="screen screen--game">
       <header class="game-header" aria-label="Live navigation status">
         <div class="metric-card">
-          <span class="metric-label">Elapsed Time</span>
+          <span class="metric-label">זמן שחלף</span>
           <span id="timer-value" class="metric-value">00:00</span>
         </div>
         <div class="metric-card">
           <div class="metric-label-row">
             <span class="live-dot" aria-hidden="true"></span>
-            <span class="metric-label">Distance Remaining</span>
+            <span class="metric-label">מרחק נותר</span>
           </div>
           <span id="distance-value" class="metric-value">--</span>
-          <span id="distance-status" class="metric-subtle">Waiting for GPS signal...</span>
+          <span id="distance-status" class="metric-subtle">ממתינים לאות GPS...</span>
         </div>
       </header>
 
@@ -626,8 +626,8 @@ function renderGameScreen() {
 
       ${isNavigation
         ? `<section id="arrival-code-window" class="panel arrival-code-window" aria-live="polite">
-            <p class="eyebrow">Arrival Passcode Unlocked</p>
-            <p class="arrival-code-text">Type this code in the field below:</p>
+            <p class="eyebrow">קוד הגעה נחשף</p>
+            <p class="arrival-code-text">הקלידו את הקוד בשדה למטה:</p>
             <p id="arrival-code-value" class="arrival-code-value"></p>
           </section>`
         : ""}
@@ -642,7 +642,7 @@ function renderGameScreen() {
           autocomplete="off"
           autocapitalize="characters"
           spellcheck="false"
-          placeholder="Enter code"
+          placeholder="הזינו קוד"
           required
         />
         <p id="${errorId}" class="field-error" role="alert"></p>
@@ -657,9 +657,9 @@ function renderCompletedScreen() {
     <section class="screen screen--centered">
       <div class="panel panel--compact completion-panel">
         <div class="completion-badge" aria-hidden="true">🏁</div>
-        <p class="eyebrow">Game Completed</p>
-        <h1 class="hero-title">Congratulations!</h1>
-        <p class="body-copy">You finished Sabayakov.</p>
+        <p class="eyebrow">המשחק הושלם</p>
+        <h1 class="hero-title">כל הכבוד!</h1>
+        <p class="body-copy">סיימתם את סביקוב.</p>
       </div>
     </section>
   `;
@@ -670,7 +670,7 @@ function renderResetControl() {
     "beforeend",
     `
       <div class="reset-wrap">
-        <button id="reset-progress-btn" class="reset-button" type="button">Reset Game</button>
+        <button id="reset-progress-btn" class="reset-button" type="button">איפוס משחק</button>
       </div>
     `,
   );
@@ -728,7 +728,7 @@ function handleLoginSubmit(form) {
   const passwordValue = normalizePhoneLikeValue(form.elements["login-password"].value);
   const expectedPassword = normalizePhoneLikeValue(gameConfig.login_password);
   if (passwordValue !== expectedPassword) {
-    setFormError("login-error", "Incorrect password.");
+    setFormError("login-error", "סיסמה שגויה.");
     return;
   }
 
@@ -749,7 +749,7 @@ function handleArrivalSubmit(form) {
   }
 
   if (!currentCoords) {
-    setFormError("arrival-error", "Waiting for GPS signal before arrival check.");
+    setFormError("arrival-error", "ממתינים לאות GPS לפני בדיקת הגעה.");
     return;
   }
 
@@ -764,14 +764,14 @@ function handleArrivalSubmit(form) {
   if (distanceMeters > maxDistanceMeters) {
     setFormError(
       "arrival-error",
-      `Too far from station. Come within ${formatDistanceMeters(maxDistanceMeters)} (current ${formatDistanceMeters(distanceMeters)}).`,
+      `רחוקים מדי מהתחנה. התקרבו עד ${formatDistanceMeters(maxDistanceMeters)} (כרגע ${formatDistanceMeters(distanceMeters)}).`,
     );
     return;
   }
 
   const arrivalCode = form.elements.code.value.trim().toUpperCase();
   if (arrivalCode !== station.arrival_code.toUpperCase()) {
-    setFormError("arrival-error", "Incorrect arrival passcode.");
+    setFormError("arrival-error", "קוד הגעה שגוי.");
     return;
   }
 
@@ -791,7 +791,7 @@ function handleCompletionSubmit(form) {
 
   const completionCode = form.elements.code.value.trim().toUpperCase();
   if (completionCode !== station.completion_code.toUpperCase()) {
-    setFormError("completion-error", "Incorrect completion passcode.");
+    setFormError("completion-error", "קוד סיום שגוי.");
     return;
   }
 
@@ -871,7 +871,7 @@ function bindEvents() {
       return;
     }
 
-    if (window.confirm("Reset all progress and start over?")) {
+    if (window.confirm("לאפס את כל ההתקדמות ולהתחיל מחדש?")) {
       resetGameProgress();
     }
   });
@@ -910,7 +910,7 @@ async function init() {
   try {
     gameConfig = await loadConfig();
   } catch (error) {
-    configLoadError = "The game configuration file could not be loaded.";
+    configLoadError = "לא ניתן לטעון את קובץ הגדרות המשחק.";
     render();
     return;
   }
