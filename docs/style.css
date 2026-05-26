@@ -30,6 +30,8 @@ body {
   color: var(--ink);
   font-family: "Rubik", sans-serif;
   direction: rtl;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   background:
     radial-gradient(circle at 14% 12%, rgba(251, 146, 60, 0.3), transparent 36%),
     radial-gradient(circle at 84% 8%, rgba(249, 115, 22, 0.2), transparent 28%),
@@ -40,6 +42,7 @@ body {
 .app {
   width: min(94vw, 760px);
   margin: 0 auto;
+  min-height: 100svh;
   min-height: 100dvh;
   padding: max(1rem, env(safe-area-inset-top)) 1rem calc(1rem + env(safe-area-inset-bottom));
   position: relative;
@@ -71,6 +74,7 @@ body {
 }
 
 .screen {
+  min-height: calc(100svh - (2rem + env(safe-area-inset-top) + env(safe-area-inset-bottom)));
   min-height: calc(100dvh - (2rem + env(safe-area-inset-top) + env(safe-area-inset-bottom)));
   display: flex;
   flex-direction: column;
@@ -81,6 +85,7 @@ body {
 .screen--centered {
   align-items: center;
   justify-content: center;
+  overflow-y: auto;
 }
 
 .screen--game {
@@ -133,6 +138,7 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 1rem;
+  width: min(100%, 360px);
   max-width: 360px;
   padding: 2rem 1.25rem 1.4rem;
   border-radius: 28px;
@@ -141,7 +147,7 @@ body {
 }
 
 .login-icon {
-  font-size: 3rem;
+  font-size: clamp(2rem, 9vw, 3rem);
   line-height: 1;
 }
 
@@ -413,6 +419,22 @@ body {
 
 .reset-button:active {
   transform: translateY(1px);
+}
+
+@media (max-width: 460px) {
+  .app {
+    width: 100%;
+    padding: max(0.75rem, env(safe-area-inset-top)) 0.75rem calc(0.75rem + env(safe-area-inset-bottom));
+  }
+
+  .screen {
+    gap: 0.75rem;
+  }
+
+  .login-panel {
+    padding: 1.1rem 0.9rem 1rem;
+    border-radius: 20px;
+  }
 }
 
 @media (min-width: 700px) {
