@@ -127,6 +127,7 @@ function validateConfig(rawConfig) {
       mission_text: hasMissionText ? station.mission_text : "",
       mission_steps: missionSteps,
       completion_code: station.completion_code,
+      background_image: typeof station.background_image === "string" ? station.background_image : "",
     };
   });
 
@@ -622,6 +623,7 @@ function renderGameScreen() {
 
   appRoot.innerHTML = `
     <section class="screen screen--game">
+      ${station.background_image ? `<div class="station-bg" style="background-image: url('${station.background_image}')"></div>` : ""}
       <header class="game-header" aria-label="Live navigation status">
         <div class="metric-card">
           <span class="metric-label">המרחק מנקודת הציון הבאה</span>

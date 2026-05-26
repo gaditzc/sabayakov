@@ -94,6 +94,16 @@ body {
   justify-content: center;
 }
 
+.station-bg {
+  position: fixed;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.13;
+  z-index: -1;
+  pointer-events: none;
+}
+
 .panel {
   width: 100%;
   background: var(--surface);
