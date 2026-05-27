@@ -118,6 +118,13 @@ body {
   display: block;
 }
 
+.clue-video {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  display: block;
+}
+
 .eyebrow {
   font-family: "Space Grotesk", sans-serif;
   font-size: 0.78rem;

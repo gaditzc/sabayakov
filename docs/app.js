@@ -123,6 +123,7 @@ function validateConfig(rawConfig) {
       target_lat: station.target_lat,
       target_lon: station.target_lon,
       clue_text: station.clue_text,
+      clue_video: typeof station.clue_video === "string" ? station.clue_video : null,
       arrival_code: station.arrival_code,
       mission_text: hasMissionText ? station.mission_text : "",
       mission_steps: missionSteps,
@@ -616,8 +617,11 @@ function renderGameScreen() {
   const formId = isNavigation ? "arrival-form" : "completion-form";
   const errorId = isNavigation ? "arrival-error" : "completion-error";
   const buttonText = "שלח";
+  const clueVideoMarkup = isNavigation && station.clue_video
+    ? `<video class="clue-video" src="${station.clue_video}" controls playsinline preload="metadata"></video>`
+    : "";
   const storyMarkup = isNavigation
-    ? `<p class="${getStoryTextClass(station.clue_text)}">${formatTextWithClickableLinks(station.clue_text)}</p>`
+    ? `${clueVideoMarkup}<p class="${getStoryTextClass(station.clue_text)}">${formatTextWithClickableLinks(station.clue_text)}</p>`
     : renderMissionBody(station);
 
   appRoot.innerHTML = `
