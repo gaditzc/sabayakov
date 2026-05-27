@@ -124,6 +124,7 @@ function validateConfig(rawConfig) {
       target_lon: station.target_lon,
       clue_text: station.clue_text,
       clue_video: typeof station.clue_video === "string" ? station.clue_video : null,
+      clue_logo: typeof station.clue_logo === "string" ? station.clue_logo : null,
       arrival_code: station.arrival_code,
       mission_text: hasMissionText ? station.mission_text : "",
       mission_steps: missionSteps,
@@ -620,8 +621,14 @@ function renderGameScreen() {
   const clueVideoMarkup = isNavigation && station.clue_video
     ? `<video class="clue-video" src="${station.clue_video}" controls playsinline preload="metadata"></video>`
     : "";
+  const clueTextMarkup = isNavigation && station.clue_logo
+    ? `<div class="clue-link-row">
+        <img src="${escapeHtml(station.clue_logo)}" class="clue-logo" alt="" />
+        <span>${formatTextWithClickableLinks(station.clue_text)}</span>
+      </div>`
+    : `<p class="${getStoryTextClass(station.clue_text)}">${formatTextWithClickableLinks(station.clue_text)}</p>`;
   const storyMarkup = isNavigation
-    ? `${clueVideoMarkup}<p class="${getStoryTextClass(station.clue_text)}">${formatTextWithClickableLinks(station.clue_text)}</p>`
+    ? `${clueVideoMarkup}${clueTextMarkup}`
     : renderMissionBody(station);
 
   appRoot.innerHTML = `
