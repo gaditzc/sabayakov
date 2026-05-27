@@ -125,6 +125,7 @@ function validateConfig(rawConfig) {
       clue_text: station.clue_text,
       clue_video: typeof station.clue_video === "string" ? station.clue_video : null,
       clue_logo: typeof station.clue_logo === "string" ? station.clue_logo : null,
+      mission_image: typeof station.mission_image === "string" ? station.mission_image : null,
       arrival_code: station.arrival_code,
       mission_text: hasMissionText ? station.mission_text : "",
       mission_steps: missionSteps,
@@ -385,6 +386,9 @@ function getStoryTextClass(value) {
 }
 
 function renderMissionBody(station) {
+  const missionImageMarkup = station.mission_image
+    ? `<img src="${escapeHtml(station.mission_image)}" class="completion-photo" alt="" />`
+    : "";
   if (Array.isArray(station.mission_steps) && station.mission_steps.length > 0) {
     const stepsMarkup = station.mission_steps
       .map(function (step) {
@@ -428,10 +432,10 @@ function renderMissionBody(station) {
       })
       .join("");
 
-    return `<div class="mission-steps">${stepsMarkup}</div>`;
+    return `${missionImageMarkup}<div class="mission-steps">${stepsMarkup}</div>`;
   }
 
-  return `<p class="${getStoryTextClass(station.mission_text)}">${formatTextWithClickableLinks(station.mission_text)}</p>`;
+  return `${missionImageMarkup}<p class="${getStoryTextClass(station.mission_text)}">${formatTextWithClickableLinks(station.mission_text)}</p>`;
 }
 
 function setText(id, value) {
